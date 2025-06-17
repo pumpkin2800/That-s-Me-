@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Player</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <audio id="audio-player" autoplay loop>
+        <source src="music/SpotiDownloader.com - Bring Me To Life - Twinkle Twinkle Little Rock Star.mp3" type="audio/mp3">
+    </audio>
+    
+    <script>
+        window.onload = function() {
+            var audio = document.getElementById('audio-player');
+            audio.volume = 0.7; // Set volume to 70%
+            
+            // Try to play immediately
+            var playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(function(error) {
+                    console.log("Autoplay prevented:", error);
+                    
+                    // Try again on user interaction
+                    document.addEventListener('click', function() {
+                        audio.play();
+                    }, { once: true });
+                });
+            }
+            
+            // Listen for messages from parent window
+            window.addEventListener('message', function(event) {
+                if (event.data === 'play') {
+                    audio.play();
+                } else if (event.data === 'pause') {
+                    audio.pause();
+                } else if (event.data === 'toggle') {
+                    if (audio.paused) {
+                        audio.play();
+                    } else {
+                        audio.pause();
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
